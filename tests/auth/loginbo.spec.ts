@@ -1,9 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../pages/LoginPage';
+import { LoginPageBo } from '../../pages/LoginPageBo';
 
   test('TC login Success', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-
+    const loginPage = new LoginPageBo(page);
     await loginPage.goto();
     await loginPage.login('aofaof', 'Aa123456');
     await loginPage.waitForLoad();
@@ -11,8 +10,7 @@ import { LoginPage } from '../../pages/LoginPage';
   });
 
   test('TC login Failed', async ({ page }) => {
-    const loginPage = new LoginPage(page);
-
+    const loginPage = new LoginPageBo(page);
     await loginPage.goto();
     await loginPage.login('adsdsds', 'Aa123456');
     await loginPage.expectLoginFailed();

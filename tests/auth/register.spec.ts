@@ -1,15 +1,32 @@
-import { test, expect } from '@playwright/test';
-import { RegisterPage } from '../../pages/MemberRegisterPage';
-import { fakeUser } from '../../utils/faker';
+import { test, expect } from '../../fixtures'
+import { fakeUser }     from '../../utils/faker'
 
-test.describe('Member Registration Tests', () => {
-    test('TC Register New Member from Template 1 Success', async ({ page }) => {
-        const registerPage = new RegisterPage(page);
-        await registerPage.goto();
-        const user = fakeUser();
-        const expectedText = page.getByText(user.username, { exact: true });
-        await registerPage.registerTemplateOne(user);
-        const actualText = await expectedText.textContent();
-        await expect(actualText).toBe(user.username);
+test.describe('Register — TH', () => {
+  test('สมัครสมาชิกสำเร็จ', async ({ memberRegisterPage, page, t }) => {
+    const user = fakeUser()
+
+    await memberRegisterPage.goto('th')
+
+    await memberRegisterPage.registerTemplateOne({
+      username: user.username,
+      phone:    user.phone,
+      password: user.password,
     })
-});
+  })
+})
+
+test.describe('Register — EN', () => {
+  test('register success', async ({ memberRegisterPage, page, t }) => {
+    const user = fakeUser()
+
+    await memberRegisterPage.goto('en')   // → /en/register
+    // t() อ่าน URL ตอนนี้ → lang = "en" → ได้ข้อความอังกฤษ
+
+    await memberRegisterPage.registerTemplateOne({
+      username: user.username,
+      phone:    user.phone,
+      password: user.password,
+    })   
+ })
+
+})

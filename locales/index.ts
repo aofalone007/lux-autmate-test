@@ -1,6 +1,4 @@
 import * as enMenu  from './en/menu';
-
-
 import * as thMenu from './th/menu';
 
 export const locales = {
