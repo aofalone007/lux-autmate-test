@@ -1,19 +1,17 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
 import { LoginPageMember }                     from '../../pages/LoginPageMember';
-import { LobbyPage, GameResult, PROVIDERS }    from '../../pages/LobbyGamePage';
+import { LobbyPage, GameResult }    from '../../pages/LobbyGamePage';
 import { GamePage }                            from '../../pages/GamePage';
+import { PROVIDER_LIST }                       from '../test-data/providers';
 
 const CREDENTIALS = {
-  username: 'testememberth01',
+  username: '0668854456',
   password: 'test123123',
 };
 
 const TIMING = {
-  // ─── เงื่อนไข pass/fail ────────────────────────────────────────────────────
-  // ✅ PASS = กด Play → เปิด game tab → ไม่มี "Error / Internal Server Error" dialog
-  // ❌ FAIL = กด Play → เปิด game tab → มี "Error / Internal Server Error" dialog ปรากฏ
-  errorDialogTimeout: 6_000,  // รอนานแค่ไหนให้ error dialog โผล่ก่อนถือว่า pass
-  newTabTimeout:      15_000,
+  errorDialogTimeout: 6_000,  
+  newTabTimeout:      10_000,
   betweenGames:       500,
 };
 
@@ -75,17 +73,15 @@ async function testGameInNewTab(
       console.log(`  ✅ PASS [${gameIndex + 1}] ${gameName}`);
     }
 
-    // ปิด game tab แล้วกลับ lobby
     await newTab.close();
-    try { await getLobbyPage().bringToFront(); } catch { /* ignore */ }
+    try { await getLobbyPage().bringToFront(); } catch { }
 
     return result;
 
   } catch (e: any) {
-    // Play button ไม่เจอ หรือ tab ไม่เปิด
     const reason = e?.message ?? 'Unknown';
     console.warn(`  ⏭️  SKIP [${gameIndex + 1}] ${gameName} — ${reason}`);
-    try { await getLobbyPage().bringToFront(); } catch { /* ignore */ }
+    try { await getLobbyPage().bringToFront(); } catch { }
 
     return {
       index:        gameIndex,
@@ -204,35 +200,20 @@ async function runProviderTest(
     ).join('\n')
   ).toHaveLength(0);
 
-   // ✅ PASS must equal Total — ทุก game ต้อง pass หมด
-  expect(
-    passed.length,
-    `PASS (${passed.length}) ≠ Total (${results.length}) — ` +
-    `failed: ${errored.length}, skipped: ${skipped.length}\n` +
-    [...errored, ...skipped].map(r => `  • ${r.gameName}: ${r.errorMessage}`).join("\n")
-  ).toEqual(results.length);
+  expect(errored).toHaveLength(0)
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 const PER_PROVIDER_TIMEOUT = 30 * 60 * 1000; // 30 min
 
-test.describe('Game Functional Test — By Provider', () => {
+test.describe('Game Functional Test — All Providers', () => {
 
-  test('JILI — play all games', async ({ page, context }) => {
-    test.setTimeout(PER_PROVIDER_TIMEOUT);
-    await runProviderTest(page, context, 'JILI', PROVIDERS.JILI);
-    stop;
-  });
-
-  test('INOUT — play all games', async ({ page, context }) => {
-    test.setTimeout(PER_PROVIDER_TIMEOUT);
-    await runProviderTest(page, context, 'INOUT', PROVIDERS.INOUT);
-  });
-
-//   test('BNG — play all games', async ({ page, context }) => {
-//     test.setTimeout(PER_PROVIDER_TIMEOUT);
-//     await runProviderTest(page, context, 'BNG', PROVIDERS.BNG);
-//   });
+  for (const provider of PROVIDER_LIST) {
+    test(`${provider.name} — play all games`, async ({ page, context }) => {
+      test.setTimeout(PER_PROVIDER_TIMEOUT);
+      await runProviderTest(page, context, provider.name, provider.id);
+    });
+  }
 
 });

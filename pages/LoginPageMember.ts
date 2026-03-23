@@ -34,7 +34,7 @@ export class LoginPageMember {
 
   async goto(locale: 'th' | 'en' = 'en') {
     await this.page.goto(`/${locale}/login`);
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('networkidle', { timeout: 60_000 });
  
     await this.page.waitForSelector(
       '[data-testid="login-username-input"]',

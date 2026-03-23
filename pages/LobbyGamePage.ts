@@ -10,16 +10,6 @@ export interface GameResult {
   gameUrl?:      string;
 }
 
-export const PROVIDERS: Record<string, string> = {
-  JILI:     'jili:0eb3bf56-b68a-11ec-ad96-96fadad72b89',
-  PLAYNGO:  'playngo:YOUR-ID-HERE',
-  BNG:      'bng:YOUR-ID-HERE',
-  INOUT:    'zgmulti_inout:3251b2ae-dfcf-11f0-9c57-06f3ddf48b9d',
-  SLOTMILL: 'slotmill:YOUR-ID-HERE',
-  FACHAI:   'fachai:YOUR-ID-HERE',
-  SPRIBE:   'spribe:YOUR-ID-HERE',
-};
-
 export class LobbyPage {
   readonly page:           Page;
   readonly gameCards:      Locator;
@@ -42,7 +32,7 @@ export class LobbyPage {
 
   async goto() {
     await this.page.goto('/en/lobby?category_name=all_game');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('networkidle', { timeout: 8000 });
     await this.closeModalIfVisible();
   }
 
@@ -107,11 +97,11 @@ export class LobbyPage {
  
   async selectProvider(providerId: string): Promise<void> {
     const card = this.page.locator(`[id="${providerId}"]`);
-    await card.waitFor({ state: 'visible', timeout: 10000 });
+    await card.waitFor({ state: 'visible', timeout: 8000 });
     await card.scrollIntoViewIfNeeded();
     await card.click();
-    await this.page.waitForLoadState('networkidle');
-    await this.gameCards.first().waitFor({ state: 'visible', timeout: 15000 });
+    await this.page.waitForLoadState('networkidle', { timeout: 8000 });
+    await this.gameCards.first().waitFor({ state: 'visible', timeout: 8000 });
     await this.closeModalIfVisible();
     console.log(`\n📦 Provider selected: ${providerId}`);
   }

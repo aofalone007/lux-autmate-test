@@ -15,6 +15,7 @@ if (!baseURL) {
 }
 
 export default defineConfig({
+  
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
